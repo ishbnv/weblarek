@@ -98,3 +98,139 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+## Данные
+В приложении используются две сущности, которые описывают данные, — товар и покупатель. Их можно описать такими интерфейсами:
+
+Товар
+
+```
+interface IProduct {
+  id: string;
+  description: string;
+  image: string;
+  title: string;
+  category: string;
+  price: number | null;
+} 
+```
+
+Покупатель
+
+```
+interface IBuyer {
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
+} 
+```
+
+### Базовый код
+
+#### Класс Catalog
+Хранит массив всех товаров, которые можно купить в приложении. Хранит товар, выбранные дял продробного отображения.
+
+Конструктор:  
+`constructor(items: IProduct[] = [], currentItem: IProduct | null = null)` - В конструктор передается массив товаров и опциональный товар для подробного отображения.
+Поля класса:  
+`private items: IProduct[]` - массив товаров.
+`private currentItem: IProduct | null` - объект с данными о выбранном товаре или пустое значение, если он не был выбран.
+
+Методы:  
+`setItems(items: IProduct[]): void` - сохранение массива товаров полученного в параметрах метода. 
+`getItems(): IProduct[]` - получение массива товаров из модели.  
+`getItemById(id: string): IProduct` - получение одного товара по его id.
+`setCurrentItem(item: IProduct): void` - сохранение товара для подробного отображения.
+`getCurrentItem(): IProduct | null` - получение товара для подробного отображения.
+
+#### Класс Cart
+Хранит массив товаров, выбранных покупателем для покупки.
+
+Поля класса:  
+`private items: IProduct[]` - массив товаров.
+
+Конструктор:  
+`constructor(items: IProduct[] = [])` - В конструктор передается массив товаров, лежащих в корзине.
+
+Методы:  
+`getCartList(): IProduct[]` - получение массива товаров, которые находятся в корзине. 
+`addToCart(item: IProduct): void` - добавление товара, который был получен в параметре, в массив корзины.  
+`removeFromCart(item: IProduct): void` - удаление товара, полученного в параметре из массива корзины.
+`emptyCart(): void` - очистка корзины.
+`getCartSum(): number` - получение стоимости всех товаров в корзине.
+`getCartCount(): number` - получение количества товаров в корзине.
+`getItemAvailability(id: string): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода.
+
+#### Класс Customer
+Хранит данные о пользователе.
+
+Конструктор:  
+`constructor(payment: TPayment = '', email: string = '', phone: string = '', address: string = '')` - В конструктор передаются следующие данные пользователя:
+- вид оплаты (наличные, карта или null);
+- адреc;
+- телефон;
+- email.
+
+Поля класса:  
+`payment: TPayment` - строка с типом оплаты.
+`email: string` - строка с email.
+`phone: string` - строка с номером телефона
+`address: string` - строка с адресом.
+
+Методы:  
+`setUserData(data: Partial<IBuyer>): void` - сохранение данных в модели.
+`getUserData(): IBuyer` - получение всех данных покупателя.  
+`removeUserData(): void` - очистка данных покупателя.
+`validateUserData(): { [key: string]: string }` - валидация данных. Поле является валидным, если оно не пустое.
+
+## Слой коммуникации
+Используется для коммуникации между приложением и сервером.
+
+Интерфейсы данных:
+
+Ответ от сервера со списком товаров
+
+```
+interface IProductList {
+  total: number;
+  items: IProduct[];
+}
+```
+
+Данные о заказе, отправляемые на сервер
+
+```
+interface IOrder {
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
+  total: number;
+  items: string[]; // массив id товаров
+}
+```
+
+Ответ сервера после оформления заказа
+
+```
+interface IOrderResult {
+  id: string;
+  total: number;
+}
+```
+
+### Базовый код
+
+#### Класс AppAPI
+Класс отвечает за взаимодействие с сервером. Использует композицию для работы с базовым классом Api.
+
+Конструктор:
+`constructor(baseApi: IApi)` - В конструктор передается объект, реализующий интерфейс IApi для выполнения HTTP-запросов.
+
+Поля класса:
+`private _baseApi: IApi` - объект для выполнения запросов к серверу.
+
+Методы:
+`getProductList(): Promise<IProductList>` - выполняет GET запрос на эндпоинт `/product/` и возвращает массив товаров.
+`postOrder(order: IOrder): Promise<IOrderResult>` - выполняет POST запрос на эндпоинт `/order/` и передаёт в него данные, полученные в параметрах метода. Возвращает промис с ответом от сервера.
+
