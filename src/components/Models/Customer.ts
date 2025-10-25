@@ -1,19 +1,12 @@
 import { IBuyer, TPayment } from "../../types";
 
 export class Customer implements IBuyer {
-    payment: TPayment;
-    email: string;
-    phone: string;
-    address: string;
+    payment: TPayment = '';
+    email: string = '';
+    phone: string = '';
+    address: string = '';
 
-    constructor(payment: TPayment = '', email: string = '', phone: string = '', address: string = '') {
-        this.payment = payment;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-    }
-
-    setUserData(data: Partial<IBuyer>): void {
+    setUser(data: Partial<IBuyer>): void {
         if (data.payment !== undefined) {
             this.payment = data.payment;
         }
@@ -28,7 +21,7 @@ export class Customer implements IBuyer {
         }
     }
 
-    getUserData(): IBuyer {
+    getUser(): IBuyer {
         return {
             payment: this.payment,
             email: this.email,
@@ -37,14 +30,14 @@ export class Customer implements IBuyer {
         };
     }
 
-    removeUserData(): void {
+    removeUser(): void {
         this.payment = '';
         this.email = '';
         this.phone = '';
         this.address = '';
     }
     
-    validateUserData(): { [key: string]: string } {
+    validateUser(): { [key: string]: string } {
         const error: { [key: string]: string } = {};
 
         if (!this.payment) {
@@ -64,6 +57,6 @@ export class Customer implements IBuyer {
     }
 
     isValid(): boolean {
-        return Object.keys(this.validateUserData()).length === 0;
+        return Object.keys(this.validateUser()).length === 0;
     }
 }

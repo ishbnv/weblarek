@@ -4,6 +4,7 @@ import { Cart } from './components/Models/Cart';
 import { Catalog } from './components/Models/Catalog';
 import { Customer } from './components/Models/Customer';
 import './scss/styles.scss';
+import { API_URL } from './utils/constants';
 import { apiProducts } from './utils/data';
 
 // Проверка каталога
@@ -42,33 +43,32 @@ console.log('Очищенный массив товаров из корзины:
 
 const customer = new Customer();
 
-console.log('Начальные данные покупателя: ', customer.getUserData());
+console.log('Начальные данные покупателя: ', customer.getUser());
 
-customer.setUserData({ email: 'example@mail.ru', phone: '+78005553535', address: 'Москва, ул. Ленина, 1' });
-console.log('После полей: ', customer.getUserData());
+customer.setUser({ email: 'example@mail.ru', phone: '+78005553535', address: 'Москва, ул. Ленина, 1' });
+console.log('После полей: ', customer.getUser());
 
-customer.setUserData({ 
+customer.setUser({ 
     email: 'newExample@mail.ru', 
     phone: '+79999999999',
     payment: 'card'
 });
-console.log('Новый массив данных покупателя: ', customer.getUserData());
+console.log('Новый массив данных покупателя: ', customer.getUser());
 
-console.log('Ошибки валидации при заполненных полях: ', customer.validateUserData());
+console.log('Ошибки валидации при заполненных полях: ', customer.validateUser());
 console.log('Данные верны? ', customer.isValid());
 
-customer.setUserData({ email: '', address: '' });
-console.log('После очистки части данных покупателя: ', customer.getUserData());
+customer.setUser({ email: '', address: '' });
+console.log('После очистки части данных покупателя: ', customer.getUser());
 
-console.log('Ошибки валидации: ', customer.validateUserData());
+console.log('Ошибки валидации: ', customer.validateUser());
 console.log('Данные верны? ', customer.isValid());
 
-customer.removeUserData();
-console.log('Очищеный массив покупателя: ', customer.getUserData());
+customer.removeUser();
+console.log('Очищеный массив покупателя: ', customer.getUser());
 
 // Проверка Api приложения
 
-export const API_URL = `${import.meta.env.VITE_API_ORIGIN}/api/weblarek`;
 const api = new Api(API_URL);
 const appApi = new AppAPI(api);
 
