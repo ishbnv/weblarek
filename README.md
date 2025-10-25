@@ -197,7 +197,7 @@ interface IProductList {
 }
 ```
 
-Данные о заказе, отправляемые на сервер
+Данные о заказе, отправляемом на сервер
 
 ```
 interface IOrder {
@@ -206,7 +206,7 @@ interface IOrder {
   phone: string;
   address: string;
   total: number;
-  items: string[]; // массив id товаров
+  items: string[];
 }
 ```
 
